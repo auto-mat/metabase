@@ -85,7 +85,9 @@
                                    "sp.metabase.com")
                                  ;; Webpack dev server
                                  (when config/is-dev?
-                                   "localhost:8080 ws://localhost:8080")]
+                                   "localhost:8080 ws://localhost:8080")
+                                 ;; DPNK app
+                                 "dpnk.dopracenakole.cz"]
                   :manifest-src ["'self'"]}]
       (format "%s %s; " (name k) (str/join " " vs))))})
 
