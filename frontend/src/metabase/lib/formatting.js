@@ -690,6 +690,19 @@ export function formatUrl(value, options = {}) {
   }
 }
 
+function getFilename(url)
+{
+   if (url)
+   {
+      const m = url.toString().match(/.*\/(.+?)\./);
+      if (m && m.length > 1)
+      {
+         return m[1];
+      }
+   }
+   return "";
+}
+
 export function formatImage(
   value: Value,
   { jsx, rich, view_as = "auto", link_text }: FormattingOptions = {},
@@ -698,7 +711,32 @@ export function formatImage(
   const protocol = getUrlProtocol(url);
   const acceptedProtocol = protocol === "http:" || protocol === "https:";
   if (jsx && rich && view_as === "image" && acceptedProtocol) {
-    return <img src={url} style={{ height: 30 }} />;
+    let newURL = url;
+    const xhr = new XMLHttpRequest();
+    const urlParser = document.createElement("a");
+    urlParser.href = url;
+    const baseURL = (urlParser.port) ? `${urlParser.protocol}//${urlParser.hostname}:${urlParser.port}${urlParser.pathname}` : `${urlParser.protocol}//${urlParser.hostname}${urlParser.pathname}`;
+    const imgName = getFilename(baseURL);
+    xhr.open("GET", baseURL, true);
+    if (urlParser.username) {
+      const auth = btoa(`${urlParser.username}:${urlParser.password}`);
+      xhr.setRequestHeader("Authorization", "Basic " + auth);
+    }
+    xhr.send();
+    xhr.onload = function() {
+      if (xhr.status !== 200) {
+        console.log(`Error get image URL ${xhr.status}: ${xhr.statusText}.`);
+      } else {
+        const imgURL = xhr.response;
+        newURL = imgURL.includes("https") || imgURL.response.includes("http") ? imgURL.replace(/['"]+/g, "") : url;
+        const img = document.getElementById(imgName);
+        img.setAttribute("src", newURL);
+      }
+    }
+    xhr.onerror = function() {
+      console.log("Get image request failed.");
+    }
+    return <img id={imgName} src="" style={{ height: 30 }} />;
   } else {
     return url;
   }
