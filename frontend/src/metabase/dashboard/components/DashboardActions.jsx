@@ -2,6 +2,7 @@
 import React from "react";
 import { t } from "ttag";
 import cx from "classnames";
+import html2canvas from "html2canvas";
 
 import DashboardSharingEmbeddingModal from "../containers/DashboardSharingEmbeddingModal.jsx";
 import FullscreenIcon from "metabase/components/icons/FullscreenIcon";
@@ -49,6 +50,17 @@ export const getDashboardActions = (
 
   // Getting notifications with static text-only cards doesn't make a lot of sense
   const canSubscribeToDashboard = hasDataCards;
+
+  const saveImg = function() {
+    html2canvas(document.body).then(canvas => {
+      const tmpLink = document.createElement("a");
+      tmpLink.href = canvas.toDataURL("image/png");
+      tmpLink.download = "dashboard.png";
+      document.body.appendChild(tmpLink);
+      tmpLink.click();
+      document.body.removeChild(tmpLink);
+    });
+  };
 
   if (!isEditing && !isEmpty && !isPublic) {
     const extraButtonClassNames =
@@ -147,6 +159,21 @@ export const getDashboardActions = (
         />,
       );
     }
+  }
+
+  if (!isEditing && !isEmpty) {
+    buttons.push(
+      <Tooltip key="save" tooltip={t`Save as image`}>
+        <span>
+          <DashboardHeaderButton onClick={e => saveImg()}>
+            <Icon
+              name="arrow_down"
+              className="text-brand-hover cursor-pointer"
+            />
+          </DashboardHeaderButton>
+        </span>
+      </Tooltip>,
+    );
   }
 
   if (!isEditing && !isEmpty) {
