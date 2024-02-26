@@ -120,6 +120,7 @@ class DashboardHeaderContainer extends Component {
     onRefreshPeriodChange: PropTypes.func.isRequired,
     onNightModeChange: PropTypes.func.isRequired,
     onFullscreenChange: PropTypes.func.isRequired,
+    onSaveAsPDF: PropTypes.func.isRequired,
 
     onSharingClick: PropTypes.func.isRequired,
     onChangeLocation: PropTypes.func.isRequired,

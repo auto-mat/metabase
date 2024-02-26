@@ -7,6 +7,8 @@ import { replace } from "react-router-redux";
 import screenfull from "screenfull";
 import * as MetabaseAnalytics from "metabase/lib/analytics";
 import { parseHashOptions, stringifyHashOptions } from "metabase/lib/browser";
+import { saveDashboardPdf } from "metabase/visualizations/lib/save-dashboard-pdf";
+import { trackExportDashboardToPDF } from "metabase/dashboard/analytics";
 
 const TICK_PERIOD = 1; // seconds
 
@@ -163,6 +165,14 @@ export const DashboardControls = ComposedComponent =>
         this.setState({ hideParameters: parameters });
       };
 
+      saveAsPDF = async () => {
+        const { dashboard } = this.props;
+        const cardNodeSelector = "body";
+        await saveDashboardPdf(cardNodeSelector, dashboard.name).then(() => {
+          trackExportDashboardToPDF(dashboard.id);
+        });
+      };
+
       _tickRefreshClock = async () => {
         this._refreshElapsed = (this._refreshElapsed || 0) + TICK_PERIOD;
         const { refreshPeriod } = this.state;
@@ -228,6 +238,7 @@ export const DashboardControls = ComposedComponent =>
             onNightModeChange={this.setNightMode}
             onFullscreenChange={this.setFullscreen}
             onRefreshPeriodChange={this.setRefreshPeriod}
+            onSaveAsPDF={this.saveAsPDF}
           />
         );
       }

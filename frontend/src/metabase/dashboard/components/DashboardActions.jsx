@@ -30,6 +30,7 @@ export const getDashboardActions = (
     onRefreshPeriodChange,
     onSharingClick,
     onFullscreenChange,
+    onSaveAsPDF,
     hasNightModeToggle,
   },
 ) => {
@@ -116,6 +117,13 @@ export const getDashboardActions = (
         setRefreshElapsedHook={setRefreshElapsedHook}
         onChangePeriod={onRefreshPeriodChange}
       />,
+    );
+  }
+  if (!isEditing && !isEmpty && isPublic) {
+    buttons.push(
+      <Tooltip key="exportaspdf" tooltip={t`Export as PDF`}>
+        <DashboardHeaderButton icon="document" onClick={() => onSaveAsPDF()} />
+      </Tooltip>,
     );
   }
 
