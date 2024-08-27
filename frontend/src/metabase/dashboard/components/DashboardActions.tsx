@@ -149,5 +149,22 @@ export const getDashboardActions = ({
     );
   }
 
+  if (!isEditing && !isEmpty && isPublic) {
+    import { saveDashboardPdf } from "metabase/visualizations/lib/save-dashboard-pdf";
+    import { trackExportDashboardToPDF } from "metabase/dashboard/analytics";
+
+    const saveAsPDF = async () => {
+      const { dashboard } = this.props;
+      const cardNodeSelector = "body";
+      await saveDashboardPdf(cardNodeSelector, dashboard.name).then(() => {
+      trackExportDashboardToPDF(dashboard.id);
+    });
+    buttons.push(
+      <Tooltip key="exportaspdf" tooltip={t`Export as PDF`}>
+        <DashboardHeaderButton icon="document" onClick={() => saveAsPDF()} />
+      </Tooltip>,
+    );
+  }
+
   return buttons;
 };
