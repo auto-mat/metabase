@@ -1,8 +1,10 @@
 import { t } from "ttag";
 
 import Tooltip from "metabase/core/components/Tooltip";
+import { trackExportDashboardToPDF } from "metabase/dashboard/analytics";
 import { DashboardEmbedAction } from "metabase/dashboard/components/DashboardEmbedAction/DashboardEmbedAction";
 import { DashboardHeaderButton } from "metabase/dashboard/components/DashboardHeader/DashboardHeader.styled";
+import { saveDashboardPdf } from "metabase/visualizations/lib/save-dashboard-pdf";
 import type { Dashboard, DashboardCard } from "metabase-types/api";
 
 import {
@@ -145,6 +147,20 @@ export const getDashboardActions = ({
             onClick={e => onFullscreenChange(!isFullscreen, !e.altKey)}
           />
         </span>
+      </Tooltip>,
+    );
+  }
+
+  if (!isEditing && !isEmpty && isPublic) {
+    const saveAsPDF = async () => {
+      const cardNodeSelector = "main";
+      await saveDashboardPdf(cardNodeSelector, dashboard.name).then(() => {
+        trackExportDashboardToPDF(dashboard.id);
+      });
+    };
+    buttons.push(
+      <Tooltip tooltip={t`Export as PDF`}>
+        <DashboardHeaderButton icon="document" onClick={() => saveAsPDF()} />
       </Tooltip>,
     );
   }
